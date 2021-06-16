@@ -1,5 +1,11 @@
 
 def deg(expr):
+    """
+    Prend en argument une expression (str) et renvoie le degré du
+    polynome associé à cette expression (int).
+    """
+    if expr == "0":
+        return "-∞"
     deglist = []
     for i, e in enumerate(expr):
         if e == "X":
@@ -20,6 +26,12 @@ class Polynome:
         expr_list.sort(key=deg, reverse=True)
         self.deg = deg(expr_list[0])
         self.expr = " + ".join(expr_list).replace("+ -","- ")
+
+    def __add__(self, polynome):
+        return "bonjour"
+
+    def __sub__(self, polynome):
+        return "au revoir"
 
     def __repr__(self):
         """
