@@ -5,6 +5,7 @@ ROSA Mathias
 SCHLÖGEL Benjamin
 """
 
+
 def deg(expr):
     """
     Prend en argument une expression (str) et renvoie le degré du
@@ -42,6 +43,7 @@ def int_ou_float(nombre):
         return int(nombre)
 
     return float(nombre)
+
 
 class Polynome:
     """

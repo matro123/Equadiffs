@@ -1,8 +1,10 @@
+
 """
 Implementation des fractions en python
 ROSA Mathias
 SCHLÖGEL Benjamin
 """
+
 
 def euclide_PGCD(numerateur, denominateur):
     """
@@ -91,4 +93,3 @@ class Fract:
     def __init__(self, numerateur, denominateur):
         self.numerateur = int(numerateur / euclide_PGCD(numerateur, denominateur))
         self.denominateur = int(denominateur / euclide_PGCD(numerateur, denominateur))
-
