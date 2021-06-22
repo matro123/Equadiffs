@@ -2,7 +2,7 @@
 def deg(expr):
     """
     Prend en argument une expression (str) et renvoie le degré du
-    polynome associé à cette expression (int).
+    polynome associé à cette expression (int_ou_float).
     """
     if expr == "0":
         return "-∞"
@@ -10,13 +10,45 @@ def deg(expr):
     for i, e in enumerate(expr):
         if e == "X":
             if (i+1) < len(expr) and expr[i + 1] == "^":
-                deglist.append(int("".join(expr[i+2:])))
+                deglist.append(int_ou_float("".join(expr[i+2:])))
             else:
                 deglist.append(1)
     if deglist != []:
         deglist.sort()
         return deglist[0]
     return 0
+
+def int_ou_float(nombre):
+    nombre = float(nombre)
+    if int(nombre) == nombre:
+        return int(nombre)
+    else:
+        return float(nombre)
+
+def euclide_PGCD(numerateur, denominateur):
+    if denominateur == 0:
+        return numerateur
+    else:
+        return euclide_PGCD(denominateur, numerateur % denominateur)
+
+def simp(numerateur, denominateur):
+    if numerateur % denominateur == 0:
+        return int(numerateur / denominateur)
+    else:
+        return Fract(int(numerateur / euclide_PGCD(numerateur, denominateur)), 
+                    int(denominateur / euclide_PGCD(numerateur, denominateur)))
+
+class Fract:
+
+    def __mul__(self, autre):
+        return Fract(self.numerateur * autre.numerateur, self.denominateur * autre.denominateur)
+
+    def __repr__(self):
+        return f'{self.numerateur}/{self.denominateur}' 
+
+    def __init__(self, numerateur, denominateur):
+        self.numerateur = int(numerateur / euclide_PGCD(numerateur, denominateur))
+        self.denominateur = int(denominateur / euclide_PGCD(numerateur, denominateur))
 
 class Polynome:
     
@@ -28,15 +60,15 @@ class Polynome:
             for mono2 in polynome.expr_list:
                 if deg(mono1) == deg(mono2):
                     if deg(mono1) in (0, "-∞"):
-                        nouveau_monome = f'{int(mono1.split("X")[0]) + int(mono2.split("X")[0])}'
+                        nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) + int_ou_float(mono2.split("X")[0])}'
                         self_expr_copie.remove(mono1)
                         polynome_expr_copie.remove(mono2)
                     elif deg(mono1) == 1:
-                        nouveau_monome = f'{int(mono1.split("X")[0]) + int(mono2.split("X")[0])}X'
+                        nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) + int_ou_float(mono2.split("X")[0])}X'
                         self_expr_copie.remove(mono1)
                         polynome_expr_copie.remove(mono2)
                     else:
-                        nouveau_monome = f'{int(mono1.split("X")[0]) + int(mono2.split("X")[0])}X^{deg(mono1)}'
+                        nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) + int_ou_float(mono2.split("X")[0])}X^{deg(mono1)}'
                         self_expr_copie.remove(mono1)
                         polynome_expr_copie.remove(mono2)
                     expression_finale.append(nouveau_monome)
@@ -56,15 +88,15 @@ class Polynome:
             for mono2 in polynome.expr_list:
                 if deg(mono1) == deg(mono2):
                     if deg(mono1) == 0:
-                        nouveau_monome = f'{int(mono1.split("X")[0]) - int(mono2.split("X")[0])}'
+                        nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) - int_ou_float(mono2.split("X")[0])}'
                         self_expr_copie.remove(mono1)
                         polynome_expr_copie.remove(mono2)
                     elif deg(mono1) == 1:
-                        nouveau_monome = f'{int(mono1.split("X")[0]) - int(mono2.split("X")[0])}X'
+                        nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) - int_ou_float(mono2.split("X")[0])}X'
                         self_expr_copie.remove(mono1)
                         polynome_expr_copie.remove(mono2)
                     else:
-                        nouveau_monome = f'{int(mono1.split("X")[0]) - int(mono2.split("X")[0])}X^{deg(mono1)}'
+                        nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) - int_ou_float(mono2.split("X")[0])}X^{deg(mono1)}'
                         self_expr_copie.remove(mono1)
                         polynome_expr_copie.remove(mono2)
                     expression_finale.append(nouveau_monome)
@@ -81,11 +113,11 @@ class Polynome:
                 if "-∞" in (deg(mono1), deg(mono2)):
                     nouveau_monome = "0"
                 elif deg(mono1) + deg(mono2) == 0:
-                    nouveau_monome = f'{int(mono1.split("X")[0]) * int(mono2.split("X")[0])}'
+                    nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) * int_ou_float(mono2.split("X")[0])}'
                 elif deg(mono1) + deg(mono2) == 1:
-                    nouveau_monome = f'{int(mono1.split("X")[0]) * int(mono2.split("X")[0])}X'
+                    nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) * int_ou_float(mono2.split("X")[0])}X'
                 else:
-                    nouveau_monome = f'{int(mono1.split("X")[0]) * int(mono2.split("X")[0])}X^{deg(mono1)+deg(mono2)}'
+                    nouveau_monome = f'{int_ou_float(mono1.split("X")[0]) * int_ou_float(mono2.split("X")[0])}X^{deg(mono1)+deg(mono2)}'
                 expression_presque_finale.append(Polynome(nouveau_monome))
         polynome_final = Polynome("0")
         for monome in expression_presque_finale:
@@ -101,15 +133,37 @@ class Polynome:
             return Polynome("0") 
         for mono in self.expr_list:               
             if deg(mono) not in ("-∞", 0):
+                monolist = mono.split("X")
+                if monolist[0] == "":
+                    monolist[0] = "1"
                 if deg(mono) == 1:
-                    nouveau_monome =  f'{int(mono.split("X")[0]) * deg(mono)}'
+                    nouveau_monome =  f'{int_ou_float(monolist[0]) * deg(mono)}'
                 elif deg(mono) == 2:
-                    nouveau_monome =  f'{int(mono.split("X")[0]) * deg(mono)}X'
+                    nouveau_monome =  f'{int_ou_float(monolist[0]) * deg(mono)}X'
                 else:
-                    nouveau_monome =  f'{int(mono.split("X")[0]) * deg(mono)}X^{deg(mono) - 1}'
+                    nouveau_monome =  f'{int_ou_float(monolist[0]) * deg(mono)}X^{deg(mono) - 1}'
                 expression_finale.append(nouveau_monome)
-        return Polynome("+".join(expression_finale))        
-        
+        return Polynome("+".join(expression_finale))
+    
+    def primitive(self):
+        """
+        Calcule la primitive du polynôme
+        """
+        expression_finale = []
+        if self.deg in ("-∞", 0):
+            return Polynome("1")
+        for mono in self.expr_list:               
+            if deg(mono) !="-∞":
+                monolist = mono.split("X")
+                if monolist[0] == "":
+                    monolist[0] = "1"
+                if deg(mono) == 0:
+                    nouveau_monome =  f'{int_ou_float(monolist[0])}X'
+                else:
+                    nouveau_monome =  f'{int_ou_float(monolist[0]) / (deg(mono)+1)}X^{deg(mono) + 1}'
+                expression_finale.append(nouveau_monome)
+        return Polynome("+".join(expression_finale))
+
     def __repr__(self):
         """
         Permet d'afficher le Polynome
