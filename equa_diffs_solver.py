@@ -1,4 +1,10 @@
 
+"""
+Potentiellement un solveur d'équations différentielles
+ROSA Mathias
+SCHLÖGEL Benjamin
+"""
+
 def deg(expr):
     """
     Prend en argument une expression (str) et renvoie le degré du
@@ -7,8 +13,8 @@ def deg(expr):
     if expr == "0":
         return "-∞"
     deglist = []
-    for i, e in enumerate(expr):
-        if e == "X":
+    for i, char in enumerate(expr):
+        if char == "X":
             if (i+1) < len(expr) and expr[i + 1] == "^":
                 deglist.append(int_ou_float("".join(expr[i+2:])))
             else:
@@ -18,42 +24,139 @@ def deg(expr):
         return deglist[0]
     return 0
 
+
 def int_ou_float(nombre):
+    """
+    Convertit une chaine de caractères ou un nombre en int ou en float
+
+    Argument
+    --------
+        nombre : int, float ou str
+
+    Renvoie
+        nombre : int ou float
+
+    """
     nombre = float(nombre)
     if int(nombre) == nombre:
         return int(nombre)
-    else:
-        return float(nombre)
+
+    return float(nombre)
+
 
 def euclide_PGCD(numerateur, denominateur):
+    """
+    Donne le PGCD de deux nombres grêce à l'algorithme d'euclide et la
+    récursivité
+
+    Argument
+    --------
+        numerateur : int
+        denominateur : int
+
+    Renvoie
+        pgcd : int
+
+    """
     if denominateur == 0:
         return numerateur
-    else:
-        return euclide_PGCD(denominateur, numerateur % denominateur)
+
+    return euclide_PGCD(denominateur, numerateur % denominateur)
+
 
 def simp(numerateur, denominateur):
+    """
+    Simplifie une fraction (instance de la classe Fract)
+
+    Argument
+    --------
+        numerateur : int
+        denominateur : int
+
+    Renvoie
+        fraction simplifiée : Instance de la classe Fract
+
+    """
     if numerateur % denominateur == 0:
         return int(numerateur / denominateur)
-    else:
-        return Fract(int(numerateur / euclide_PGCD(numerateur, denominateur)), 
-                    int(denominateur / euclide_PGCD(numerateur, denominateur)))
+
+    return Fract(int(numerateur / euclide_PGCD(numerateur, denominateur)),
+                 int(denominateur / euclide_PGCD(numerateur, denominateur)))
+
 
 class Fract:
+    """
+    Une classe pour représenter une fraction
+
+    Attributs
+    ---------
+        numerateur : int
+        denominateur : int
+
+    Méthodes
+    --------
+        __mul__ :
+            multiplication de fractions
+        __repr__ :
+            représentation de la fraction
+    """
 
     def __mul__(self, autre):
-        return Fract(self.numerateur * autre.numerateur, self.denominateur * autre.denominateur)
+        if isinstance(autre, int):
+            autre = Fract(autre, 1)
+        return Fract(self.numerateur * autre.numerateur,
+                     self.denominateur * autre.denominateur)
+
+    def __rmul__(self, autre):
+        return self * autre
+
+    def __add__(self, autre):
+        if isinstance(autre, int):
+            autre = Fract(autre, 1)
+        return Fract(self.numerateur * autre.denominateur + autre.numerateur * self.denominateur,
+                     self.denominateur * autre.denominateur)
+
+    def __radd__(self, autre):
+        return self + autre
+
+    def __sub__(self, autre):
+        return self + -1 * autre
+
+    def __rsub__(self, autre):
+        return -1 * self + autre
 
     def __repr__(self):
-        return f'{self.numerateur}/{self.denominateur}' 
+        return f'{self.numerateur}/{self.denominateur}'
 
     def __init__(self, numerateur, denominateur):
         self.numerateur = int(numerateur / euclide_PGCD(numerateur, denominateur))
         self.denominateur = int(denominateur / euclide_PGCD(numerateur, denominateur))
 
+
 class Polynome:
-    
+    """
+    Une classe pour représenter un polynôme
+
+    Attribut
+    --------
+        expression : str
+
+    Méthodes
+    --------
+        __add__ :
+            addition des polynômes
+        __sub__ :
+            soustraction des polynômes
+        derivee :
+            donne le polynome derivé
+        primitive :
+            donne la primitive qui s'annule en 0
+        __repr__ :
+            représentation du polynome
+    """
+
     def __add__(self, polynome):
-        expression_finale=[]
+        expression_finale = []
         self_expr_copie = self.expr_list[:]
         polynome_expr_copie = polynome.expr_list[:]
         for mono1 in self.expr_list:
@@ -79,7 +182,7 @@ class Polynome:
         if "0" in expression_finale and expression_finale != ["0"]:
             expression_finale.remove("0")
         return Polynome("+".join(expression_finale))
-                    
+
     def __sub__(self, polynome):
         expression_finale = []
         self_expr_copie = self.expr_list[:]
@@ -130,8 +233,8 @@ class Polynome:
         """
         expression_finale = []
         if self.deg in ("-∞", 0):
-            return Polynome("0") 
-        for mono in self.expr_list:               
+            return Polynome("0")
+        for mono in self.expr_list:
             if deg(mono) not in ("-∞", 0):
                 monolist = mono.split("X")
                 if monolist[0] == "":
@@ -144,7 +247,7 @@ class Polynome:
                     nouveau_monome =  f'{int_ou_float(monolist[0]) * deg(mono)}X^{deg(mono) - 1}'
                 expression_finale.append(nouveau_monome)
         return Polynome("+".join(expression_finale))
-    
+
     def primitive(self):
         """
         Calcule la primitive du polynôme
@@ -152,15 +255,15 @@ class Polynome:
         expression_finale = []
         if self.deg in ("-∞", 0):
             return Polynome("1")
-        for mono in self.expr_list:               
-            if deg(mono) !="-∞":
+        for mono in self.expr_list:
+            if deg(mono) != "-∞":
                 monolist = mono.split("X")
                 if monolist[0] == "":
                     monolist[0] = "1"
                 if deg(mono) == 0:
-                    nouveau_monome =  f'{int_ou_float(monolist[0])}X'
+                    nouveau_monome = f'{int_ou_float(monolist[0])}X'
                 else:
-                    nouveau_monome =  f'{int_ou_float(monolist[0]) / (deg(mono)+1)}X^{deg(mono) + 1}'
+                    nouveau_monome = f'{int_ou_float(monolist[0]) / (deg(mono)+1)}X^{deg(mono) + 1}'
                 expression_finale.append(nouveau_monome)
         return Polynome("+".join(expression_finale))
 
@@ -169,12 +272,12 @@ class Polynome:
         Permet d'afficher le Polynome
         """
         return f'{self.expr}'
-    
+
     def __init__(self, expr):
-        expr_list = expr.replace(" ","").replace("-","+-").split("+")
+        expr_list = expr.replace(" ", "").replace("-", "+-").split("+")
         expr_list = [valeur for valeur in expr_list if valeur != ""]
-        if not "0" in expr_list:
+        if "0" not in expr_list:
             expr_list.sort(key=deg, reverse=True)
         self.deg = deg(expr_list[0])
         self.expr_list = expr_list
-        self.expr = " + ".join(expr_list).replace("+ -","- ")
+        self.expr = " + ".join(expr_list).replace("+ -", "- ")
