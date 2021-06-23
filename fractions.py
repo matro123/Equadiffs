@@ -92,6 +92,24 @@ class Fract:
     def __rsub__(self, autre):
         return -1 * self + autre
 
+    def __truediv__(self, autre):
+        if isinstance(autre, int):
+            return Fract(self.numerateur, (self.denominateur * autre))
+
+        nouveau_num = (self.numerateur * autre.denominateur)
+        nouveau_den = (self.denominateur * autre.numerateur)
+        return Fract(int(nouveau_num / euclide_PGCD(nouveau_num, nouveau_den)), int(nouveau_den / euclide_PGCD(nouveau_num, nouveau_den)))
+
+    def __rtruediv__(self, autre):
+        raise NotImplementedError
+
+    def __mod__(self, autre):
+        fraction_simplifiee = self / autre
+        return fraction_simplifiee.numerateur % fraction_simplifiee.denominateur
+
+    def __rmod__(self, autre):
+        raise NotImplementedError
+
     def __repr__(self):
         # Le if c'est pour faire joli
         if self.denominateur == 1:
