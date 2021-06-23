@@ -63,11 +63,16 @@ class Fract:
             représentation de la fraction
     """
 
+    def int_convert(self):
+        if self.denominateur == 1:
+            return self.numerateur
+        return self
+
     def __mul__(self, autre):
         if isinstance(autre, int):
             autre = Fract(autre, 1)
         return Fract(self.numerateur * autre.numerateur,
-                     self.denominateur * autre.denominateur)
+                     self.denominateur * autre.denominateur).int_convert()
 
     def __rmul__(self, autre):
         return self * autre
@@ -76,7 +81,7 @@ class Fract:
         if isinstance(autre, int):
             autre = Fract(autre, 1)
         return Fract(self.numerateur * autre.denominateur + autre.numerateur * self.denominateur,
-                     self.denominateur * autre.denominateur)
+                     self.denominateur * autre.denominateur).int_convert()
 
     def __radd__(self, autre):
         return self + autre
@@ -88,8 +93,12 @@ class Fract:
         return -1 * self + autre
 
     def __repr__(self):
+        # Le if c'est pour faire joli
+        if self.denominateur == 1:
+            return f'{self.numerateur}'
         return f'{self.numerateur}/{self.denominateur}'
 
     def __init__(self, numerateur, denominateur):
         self.numerateur = int(numerateur / euclide_PGCD(numerateur, denominateur))
         self.denominateur = int(denominateur / euclide_PGCD(numerateur, denominateur))
+
