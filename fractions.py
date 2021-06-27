@@ -111,14 +111,6 @@ class Fract:
 
     def __truediv__(self, autre):
         return Fract(self, autre)
-        """
-        if isinstance(autre, int):
-            return Fract(self.numerateur, (self.denominateur * autre))
-
-        nouveau_num = (self.numerateur * autre.denominateur)
-        nouveau_den = (self.denominateur * autre.numerateur)
-        return Fract(int(nouveau_num / euclide_pgcd(nouveau_num, nouveau_den)), int(nouveau_den / euclide_pgcd(nouveau_num, nouveau_den)))
-    """
 
     def __rtruediv__(self, autre):
         autre_fraction = Fract(autre,1)
