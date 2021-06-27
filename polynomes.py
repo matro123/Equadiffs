@@ -29,7 +29,7 @@ def deg(expr):
 
 def convert(nombre):
     """
-    Convertit une chaine de caractères ou un nombre en int ou en float
+    Convertit une chaine de caractères ou un nombre en int, float ou Fract
 
     Argument
     --------
@@ -45,8 +45,15 @@ def convert(nombre):
 
     if isinstance(nombre, str) and "/" in nombre:
         nombre = nombre.split("/")
+        for i, n in enumerate(nombre):
+            if n == "":
+                nombre[i] = 1
         return Fract(*[int(n) for n in nombre])
 
+    if nombre == "-":
+        nombre = -1    
+    elif nombre == "":
+        nombre = 1
     nombre = float(nombre)
     if int(nombre) == nombre:
         return int(nombre)
@@ -150,16 +157,39 @@ class Polynome:
     def __rmul__(self, autre):
             return self * autre
 
-    def __floordiv__(self, autre): # ne marche pas encore
+    def __floordiv1__(self, autre): # ne marche pas encore
         if self.deg < autre.deg:
             return Polynome("0")
         reste = self
         quotient = Polynome("0")
         if self.deg == autre.deg:
-            return Polynome("1")
-        while reste.deg >= autre.deg:
-            reste = reste - autre
+            return Polynome(f'{Fract(convert((self.expr_list)[0].split("X")[0]), convert((autre.expr_list)[0].split("X")[0]))}')
+        while reste.deg >= autre.deg:            
+            autre_multiplie = (autre * Polynome(f'{Fract(convert((reste.expr_list)[0].split("X")[0]), convert((autre.expr_list)[0].split("X")[0]))}X^{reste.deg - autre.deg}'))
+            print(reste)
+            reste = reste - autre_multiplie
+            print(reste, "         sep       ", autre_multiplie)
         return reste
+
+    def __or__(self, autre): # return [quotient, reste]
+        if self.deg < autre.deg:
+            return Polynome("0"), self
+        if self.deg == autre.deg:
+            quotient = Polynome(f'{Fract(convert((self.expr_list)[0].split("X")[0]), convert((autre.expr_list)[0].split("X")[0]))}')
+            return quotient, self - quotient * autre
+        reste = self
+        quotient = Polynome("0")
+        while reste.deg >= autre.deg:
+            monome_quotient = Polynome(f'{Fract(convert((reste.expr_list)[0].split("X")[0]), convert((autre.expr_list)[0].split("X")[0]))}X^{reste.deg - autre.deg}')
+            reste = reste - monome_quotient * autre
+            quotient += monome_quotient
+        return quotient, reste
+
+    def __floordiv__(self, autre):
+        return (self | autre)[0]
+    
+    def __mod__(self, autre):
+        return (self | autre)[1]
 
     def derivee(self):
         """
@@ -210,11 +240,15 @@ class Polynome:
     def __init__(self, expr):
         expr_list = expr.replace(" ", "").replace("-", "+-").split("+")
         expr_list = [valeur for valeur in expr_list if valeur != ""]
+        if expr_list != ["0"]:
+            for valeur in expr_list:
+                if valeur.split("X")[0] == "0":
+                    expr_list.remove(valeur)
         for i, nombre in enumerate(expr_list):
             if "Fract" in nombre:
                 tartiflette = nombre.split("X") #  On a plus d'inspi mdr
-                nombre = tartiflette[0].replace("Fract", "").replace("(", "").replace(")", "").split(",")
-                expr_list[i] = f'{Fract(*[int(n) for n in nombre])}X{tartiflette[1]}'
+                raclette = tartiflette[0].replace("Fract", "").replace("(", "").replace(")", "").split(",")
+                expr_list[i] = f'{Fract(*[int(n) for n in raclette])}X{tartiflette[1]}'
             expr_list[i] = nombre.replace("X^0", "").replace("X^1", "X")
         if "0" not in expr_list:
             expr_list.sort(key=deg, reverse=True)
