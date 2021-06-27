@@ -1,4 +1,5 @@
-
+#! /usr/bin/env python3
+# coding: utf-8
 """
 Potentiellement un solveur d'équations différentielles
 ROSA Mathias
@@ -8,4 +9,4 @@ SCHLÖGEL Benjamin
 from polynomes import Polynome
 from fractions import Fract
 
-"""Y'a pu rien 😥"""
+"""Ici, Prochainement un solveur d'équations différentielles"""

@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+# coding: utf-8
 
 """
 Implementation des polynomes en python
@@ -36,7 +38,7 @@ def convert(nombre):
         nombre : int, float, Fract ou str
 
     Renvoie
-        nombre : int ou float
+        nombre : int, float ou Fract
 
     """
     if isinstance(nombre, str) and "Fract" in nombre:
@@ -78,10 +80,17 @@ class Polynome:
             soustraction des polynômes
         __mul__ :
             multiplication des polynomes
+        __or__ :
+            effectue la division euclidienne de deux polynomes et
+            renvoir un couple : (quotient :Polynome, reste :Polynome)
+        __floordiv__ :
+            renvoie le quotient de la division euclidienne de deux polynomes
+        __mod__ :
+            renvoie le reste de la division euclidienne de deux polynomes
         derivee :
-            donne le polynome derivé
+            renvoie le polynome derivé
         primitive :
-            donne la primitive qui s'annule en 0
+            renvoie la primitive qui s'annule en 0
         __repr__ :
             représentation du polynome
     """
@@ -157,21 +166,7 @@ class Polynome:
     def __rmul__(self, autre):
             return self * autre
 
-    def __floordiv1__(self, autre): # ne marche pas encore
-        if self.deg < autre.deg:
-            return Polynome("0")
-        reste = self
-        quotient = Polynome("0")
-        if self.deg == autre.deg:
-            return Polynome(f'{Fract(convert((self.expr_list)[0].split("X")[0]), convert((autre.expr_list)[0].split("X")[0]))}')
-        while reste.deg >= autre.deg:            
-            autre_multiplie = (autre * Polynome(f'{Fract(convert((reste.expr_list)[0].split("X")[0]), convert((autre.expr_list)[0].split("X")[0]))}X^{reste.deg - autre.deg}'))
-            print(reste)
-            reste = reste - autre_multiplie
-            print(reste, "         sep       ", autre_multiplie)
-        return reste
-
-    def __or__(self, autre): # return [quotient, reste]
+    def __or__(self, autre):
         if self.deg < autre.deg:
             return Polynome("0"), self
         if self.deg == autre.deg:
