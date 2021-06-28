@@ -3,6 +3,7 @@
 """
 Implementation des fractions en python
 ROSA Mathias
+ROURE Mathéo
 SCHLÖGEL Benjamin
 """
 

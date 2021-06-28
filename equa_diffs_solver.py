@@ -3,6 +3,7 @@
 """
 Potentiellement un solveur d'équations différentielles
 ROSA Mathias
+ROURE Mathéo
 SCHLÖGEL Benjamin
 """
 

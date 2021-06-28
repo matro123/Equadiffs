@@ -4,6 +4,7 @@
 """
 Implementation des polynomes en python
 ROSA Mathias
+ROURE Mathéo
 SCHLÖGEL Benjamin
 """
 
