@@ -7,7 +7,6 @@ ROURE Mathéo
 SCHLÖGEL Benjamin
 """
 
-
 def euclide_pgcd(numerateur, denominateur):
     """
     Donne le PGCD de deux nombres grêce à l'algorithme d'euclide et la
@@ -149,4 +148,3 @@ class Fract:
             nouveau_denominateur = -nouveau_denominateur
         self.numerateur = int(nouveau_numerateur / euclide_pgcd(nouveau_numerateur, nouveau_denominateur))
         self.denominateur = int(nouveau_denominateur / euclide_pgcd(nouveau_numerateur, nouveau_denominateur))
-
