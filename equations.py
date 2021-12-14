@@ -13,3 +13,13 @@ class Equation:
 
     def __init__(self, expr):
         self.expr = expr
+        self.expr_split = expr.split("=")
+
+        # reconnaissance de l'ordre
+
+        if "''" in self.expr_split[0]:
+            self.ordre = 2
+        elif "'" in self.expr_split[0]:
+            self.ordre = 1
+        else:
+            self.ordre = 0
